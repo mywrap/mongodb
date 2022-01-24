@@ -49,7 +49,7 @@ type Config struct {
 	Port     string
 	Username string
 	Password string
-	Database string // schema (aka database) name
+	Database string
 }
 
 func (c Config) ToDataSourceURL() string {

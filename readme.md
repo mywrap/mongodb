@@ -5,16 +5,15 @@ Wrapped [mongodb/mongo-go-driver](https://github.com/mongodb/mongo-go-driver.git
 ## Usage
 
 ````go
-import "github.com/mywrap/mongodb"
-
-func main() {
-	client, err := mongodb.Connect(mongodb.LoadEnvConfig())
-	if err != nil {
-		log.Fatalf("error Connect: %v", err)
-	}
-	_, err = client.Database("database0").Collection("testColl0").
-		InsertOne(context.Background(), map[string]interface{}{"key0": "val0"})
-	log.Printf("err InsertOne: %v", err)
+cfg := Config{Host: "127.0.0.1", Port: "27017", Database: "paave_news"}
+client, err := Connect(cfg)
+if err != nil {
+    log.Fatalf("error Connect: %v", err)
 }
+ret, err := client.Database(cfg.Database).Collection("TestStruct").
+    UpdateOne(context.TODO(),
+        bson.M{"_id": "TestKey0"},
+        bson.M{"$set": bson.M{"Value": "test value", "UpdatedAt": time.Now()}},
+        options.Update().SetUpsert(true),
+    )
 ````
-Detail in [mongo_test.go](./mongo_test.go).

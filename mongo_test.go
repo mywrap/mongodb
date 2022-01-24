@@ -2,31 +2,31 @@ package mongodb
 
 import (
 	"context"
-	"math"
 	"testing"
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// this test need a local running MongoDB server
+// this test need a local MongoDB server
 func TestConnect(t *testing.T) {
-	//c := Config{Host: "127.0.0.1", Port: "27017", Database: "database0"}
-	c := LoadEnvConfig()
-	client, err := Connect(c)
+	cfg := Config{Host: "127.0.0.1", Port: "27017", Database: "database0"}
+	client, err := Connect(cfg)
 	if err != nil {
 		t.Fatalf("error Connect: %v", err)
 	}
-
-	qr, err := client.Database(c.Database).Collection("testColl0").
-		InsertOne(context.Background(),
-			map[string]interface{}{
-				"FullName": "Đào Thị Lán",
-				"Phone":    "09xxx28543",
-				"NetWorth": 10 * math.Pow10(9),
-			},
+	ret, err := client.Database(cfg.Database).Collection("TestStruct").
+		UpdateOne(context.TODO(),
+			bson.M{"_id": "TestKey0"},
+			bson.M{"$set": bson.M{"Value": "test value", "UpdatedAt": time.Now()}},
+			options.Update().SetUpsert(true),
 		)
 	if err != nil {
-		t.Errorf("error InsertOne: %v", err)
+		t.Errorf("error InsertOne: %#v", err)
+	} else {
+		t.Logf("upsertedID: %v", ret.UpsertedID)
 	}
-	t.Logf("insertedId: %v", qr.InsertedID)
 }
 
 func TestConfig_ToDataSourceURL(t *testing.T) {
@@ -49,5 +49,5 @@ func TestConfig_ToDataSourceURL(t *testing.T) {
 }
 
 func Test_BasicQuery(t *testing.T) {
-	// TODO: examples options find limit, offset, decode, aggregate "join"
+	// TODO: examples options find limit, offset, decode, aggregate (join)
 }
