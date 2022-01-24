@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-// Connect initializes a new MongoDB client (sent a Ping)
+// Connect initializes a new MongoDB client (and sends a Ping)
 func Connect(config Config) (*mongo.Client, error) {
 	if config.Host == "" || config.Port == "" {
 		return nil, errors.New("empty config")
